@@ -12,4 +12,6 @@ def index():
     2. 從資料庫撈取所有 Category 提供給側邊欄或選單
     3. 將資料丟往 render_template('index.html', recipes=...)
     """
-    pass
+    recipes = Recipe.get_all()
+    categories = Category.get_all()
+    return render_template('index.html', recipes=recipes, categories=categories)

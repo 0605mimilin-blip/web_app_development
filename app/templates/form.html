@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if recipe %}編輯食譜{% else %}新增食譜{% endif %} - 食譜收藏夾
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        
+        <div class="d-flex align-items-center mb-4 mt-2">
+            <a href="javascript:history.back()" class="text-muted text-decoration-none me-4">
+                <i class="fa-solid fa-arrow-left fa-lg"></i>
+            </a>
+            <h2 class="mb-0 fw-bold">{% if recipe %}編輯食譜{% else %}新增美味食譜{% endif %}</h2>
+        </div>
+
+        <div class="card recipe-card p-4 p-md-5 border-0 shadow-sm">
+            
+            <form action="{% if recipe %}{{ url_for('recipe.edit_recipe', recipe_id=recipe.id) }}{% else %}{{ url_for('recipe.create_recipe') }}{% endif %}" method="POST">
+                
+                <div class="mb-4">
+                    <label for="title" class="form-label fw-bold text-dark fs-5">食譜名稱 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control form-control-lg" id="title" name="title" value="{{ recipe.title if recipe else '' }}" required placeholder="例如：法式紅酒燉牛肉">
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="category_id" class="form-label fw-medium text-dark">分類 <span class="text-danger">*</span></label>
+                        <select class="form-select" id="category_id" name="category_id" required>
+                            <option value="">請選擇所屬分類...</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}" {% if recipe and recipe.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="cooking_time" class="form-label fw-medium text-dark">總料理時間 (分鐘)</label>
+                        <input type="number" class="form-control" id="cooking_time" name="cooking_time" value="{{ recipe.cooking_time if recipe and recipe.cooking_time else '' }}" placeholder="例如：45">
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label class="form-label fw-medium text-dark d-block mb-3">食譜屬性標籤</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for tag in tags %}
+                        <div class="form-check p-0">
+                            <!-- 隱藏預設 checkbox，自訂 badge 樣式 -->
+                            <input class="form-check-input d-none" type="checkbox" name="tag_ids" value="{{ tag.id }}" id="tag_{{ tag.id }}"
+                            {% if tag.id in default_tags %}checked{% endif %}>
+                            <label class="form-check-label badge badge-tag py-2 px-3 fw-medium fs-6 user-select-none" for="tag_{{ tag.id }}">
+                                {{ tag.name }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label for="ingredients" class="form-label fw-bold text-dark fs-5">食材清單 <span class="text-danger">*</span></label>
+                    <p class="text-muted small mb-2"><i class="fa-solid fa-circle-info me-1"></i> 請清楚列出每項食材名稱與份量</p>
+                    <textarea class="form-control bg-light" id="ingredients" name="ingredients" rows="6" required placeholder="牛肉 500g&#10;洋蔥 1顆&#10;紅蘿蔔 1根">{{ recipe.ingredients if recipe else '' }}</textarea>
+                </div>
+
+                <div class="mb-5">
+                    <label for="steps" class="form-label fw-bold text-dark fs-5">料理步驟 <span class="text-danger">*</span></label>
+                    <p class="text-muted small mb-2"><i class="fa-solid fa-circle-info me-1"></i> 分段描述料理製作流程</p>
+                    <textarea class="form-control bg-light" id="steps" name="steps" rows="8" required placeholder="步驟一：將牛肉切塊後熱鍋煎至表面微焦。&#10;步驟二：加入切好的洋蔥與紅蘿蔔拌炒。">{{ recipe.steps if recipe else '' }}</textarea>
+                </div>
+
+                <hr class="mb-4">
+
+                <div class="d-flex justify-content-end gap-3 mt-4">
+                    <a href="{% if recipe %}{{ url_for('recipe.detail', recipe_id=recipe.id) }}{% else %}{{ url_for('main.index') }}{% endif %}" class="btn btn-light fw-medium px-4 py-2">取消操作</a>
+                    <button type="submit" class="btn btn-primary px-5 py-2 fw-bold text-uppercase">{% if recipe %}更新儲存{% else %}確認發佈{% endif %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}{{ recipe.title }} - 食譜收藏夾{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        
+        <!-- 頂部與管理工具列 -->
+        <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+            <a href="{{ url_for('main.index') }}" class="text-decoration-none text-muted fw-bold d-flex align-items-center">
+                <i class="fa-solid fa-chevron-left me-2"></i>探索列表
+            </a>
+            <div class="d-flex gap-3">
+                <a href="{{ url_for('recipe.edit_recipe', recipe_id=recipe.id) }}" class="btn btn-light fw-medium shadow-sm px-3">
+                    <i class="fa-regular fa-pen-to-square me-1"></i> 編輯內容
+                </a>
+                <form action="{{ url_for('recipe.delete_recipe', recipe_id=recipe.id) }}" method="POST" class="d-inline" onsubmit="return confirm('確定要刪除「{{ recipe.title }}」這份食譜嗎？\n⚠️ 此動作無法復原。');">
+                    <button type="submit" class="btn btn-outline-danger fw-medium shadow-sm px-3">
+                        <i class="fa-regular fa-trash-can me-1"></i> 刪除
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 食譜標題看板 Hero -->
+        <div class="recipe-header shadow-sm border">
+            <span class="badge badge-custom fs-6 px-3 py-2 mb-4 shadow-sm">{{ recipe.category.name }}</span>
+            <h1 class="display-4 fw-bolder text-dark mb-4 lh-base">{{ recipe.title }}</h1>
+            
+            <div class="d-flex align-items-center flex-wrap gap-4 text-muted mb-4 fs-5">
+                {% if recipe.cooking_time %}
+                <div class="d-flex align-items-center">
+                    <i class="fa-regular fa-clock me-2 text-primary fa-lg"></i>
+                    <span class="fw-bold">{{ recipe.cooking_time }} 分鐘</span>
+                </div>
+                {% endif %}
+                <div class="d-flex align-items-center">
+                    <i class="fa-regular fa-calendar-check me-2 text-primary fa-lg"></i>
+                    <span>建立於 {{ recipe.created_at.strftime('%Y-%m-%d') }}</span>
+                </div>
+            </div>
+
+            <div class="tags-container mt-2">
+                {% for tag in recipe.tags %}
+                    <span class="badge badge-tag fs-6 px-3 py-2 fw-medium me-2 mb-2 shadow-sm"><i class="fa-solid fa-hashtag me-1 opacity-50"></i>{{ tag.name }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 食材與步驟詳細內文 -->
+        <div class="row g-5">
+            <!-- 食材區塊 -->
+            <div class="col-md-5">
+                <div class="card recipe-card h-100 border-0 shadow-sm" style="background-color: #fffaf5;">
+                    <div class="card-body p-4 p-lg-5">
+                        <h3 class="fw-bolder mb-4 d-flex align-items-center text-dark">
+                            <span class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-size: 1rem;"><i class="fa-solid fa-basket-shopping"></i></span>
+                            所需食材
+                        </h3>
+                        <!-- 使用 pre-wrap 讓多行字串正確渲染 -->
+                        <div class="fs-5 text-dark fw-medium" style="white-space: pre-wrap; line-height: 2.2; letter-spacing: 0.5px;">{{ recipe.ingredients }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 步驟區塊 -->
+            <div class="col-md-7">
+                <div class="card recipe-card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4 p-lg-5">
+                        <h3 class="fw-bolder mb-4 d-flex align-items-center text-dark">
+                            <span class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-size: 1rem;"><i class="fa-solid fa-list-ol"></i></span>
+                            料理步驟
+                        </h3>
+                        <!-- 使用 pre-wrap 確保使用者的換行得以保留 -->
+                        <div class="fs-5 text-dark" style="white-space: pre-wrap; line-height: 2; letter-spacing: 0.3px;">{{ recipe.steps }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
